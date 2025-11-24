@@ -1,0 +1,76 @@
+﻿@page
+@model Obligatorio2Prog2.Pages.GestionTurnos.IndexModel
+@{
+    ViewData["Title"] = "Gestión de turnos";
+}
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm-6">
+                <h2>Lista de cursos</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="card-body">
+            @if (Model.Turnos.Count() > 0)
+            {
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>
+                            @Html.DisplayNameFor(m => m.Turnos.First().TurnoId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m => m.Turnos.First().Id_Paciente)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m => m.Turnos.First().Id_Medico)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m => m.Turnos.First().FechaTurno)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(m => m.Turnos.First().HoraTurno)
+                        </th>
+                        <th>
+                            Acciones
+                        </th>
+                    </tr>
+                    @foreach (var item in Model.Turnos)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(m => item.TurnoId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => item.Id_Paciente)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => item.Id_Medico)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => item.FechaTurno)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => item.HoraTurno)
+                            </td>
+                            <td>
+                                <a asp-route-id="@item.TurnoId" asp-page="Editar" class="btn btn-success btn-sm">
+                                    Editar
+                                </a>
+                                <button asp-page-handler="Borrar" asp-route-id="@item.TurnoId" onClick="return confirm('¿Está seguro de querer borrar el curso?')" class="btn btn-danger btn-sm">
+                                    Borrar
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }
+            else
+            {
+                <p>No hay cursos disponibles</p>
+            }
+        </div>
+    </div>
+</div>
