@@ -6,71 +6,92 @@
 
 <div class="card">
     <div class="card-header">
-        <div class="row">
-            <div class="col-sm-6">
-                <h2>Lista de cursos</h2>
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="m-0">Lista de turnos</h2>
+            <!-- Boton para abrir modal -->
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAgendar">
+                Agendar turno
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal para agendar turno -->
+    <div class="modal fade" id="modalAgendar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalAgendarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalAgendarLabel">Agendar turno</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Formulario para agregar los datos del turno a agendar.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Agendar</button>
+                </div>
             </div>
         </div>
     </div>
-    <div class="card-body">
-        <div class="card-body">
-            @if (Model.Turnos.Count() > 0)
-            {
-                <table class="table table-striped border">
-                    <tr class="table-secondary">
-                        <th>
-                            @Html.DisplayNameFor(m => m.Turnos.First().TurnoId)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(m => m.Turnos.First().Id_Paciente)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(m => m.Turnos.First().Id_Medico)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(m => m.Turnos.First().FechaTurno)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(m => m.Turnos.First().HoraTurno)
-                        </th>
-                        <th>
-                            Acciones
-                        </th>
+
+    <!-- Tabla de turnos -->
+    <div class="card-body px-0 pb-0">
+        @if (Model.Turnos.Count() > 0)
+        {
+            <table class="table table-striped border mb-0">
+                <tr class="table-secondary">
+                    <th>
+                        Turno
+                    </th>
+                    <th>
+                        Paciente
+                    </th>
+                    <th>
+                        Medico
+                    </th>
+                    <th>
+                        Fecha
+                    </th>
+                    <th>
+                        Hora
+                    </th>
+                    <th>
+                        Acciones
+                    </th>
+                </tr>
+                @foreach (var item in Model.Turnos)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(m => item.TurnoId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.Id_Paciente)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.Id_Medico)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.FechaTurno)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.HoraTurno)
+                        </td>
+                        <td>
+                            <a asp-route-id="@item.TurnoId" asp-page="Editar" class="btn btn-warning btn-sm">
+                                Editar
+                            </a>
+                            <button asp-page-handler="Borrar" asp-route-id="@item.TurnoId" onClick="return confirm('¿Está seguro de querer borrar el curso?')" class="btn btn-danger btn-sm">
+                                Borrar
+                            </button>
+                        </td>
                     </tr>
-                    @foreach (var item in Model.Turnos)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(m => item.TurnoId)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(m => item.Id_Paciente)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(m => item.Id_Medico)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(m => item.FechaTurno)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(m => item.HoraTurno)
-                            </td>
-                            <td>
-                                <a asp-route-id="@item.TurnoId" asp-page="Editar" class="btn btn-success btn-sm">
-                                    Editar
-                                </a>
-                                <button asp-page-handler="Borrar" asp-route-id="@item.TurnoId" onClick="return confirm('¿Está seguro de querer borrar el curso?')" class="btn btn-danger btn-sm">
-                                    Borrar
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </table>
-            }
-            else
-            {
-                <p>No hay cursos disponibles</p>
-            }
-        </div>
+                }
+            </table>
+        }
+        else
+        {
+            <p>No hay cursos disponibles</p>
+        }
     </div>
 </div>
