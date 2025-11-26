@@ -15,25 +15,6 @@
         </div>
     </div>
 
-    <!-- Modal para agendar turno -->
-    <div class="modal fade" id="modalAgendar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalAgendarLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalAgendarLabel">Agendar turno</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cancelar"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Formulario para agregar los datos del turno a agendar.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary">Agendar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Tabla de turnos -->
     <div class="card-body px-0 pb-0">
         @if (Model.Turnos.Count() > 0)
@@ -66,16 +47,16 @@
                             @Html.DisplayFor(m => item.TurnoId)
                         </td>
                         <td>
-                            @Html.DisplayFor(m => item.Id_Paciente)
+                            @Html.DisplayFor(m => item.PacienteId)
                         </td>
                         <td>
-                            @Html.DisplayFor(m => item.Id_Medico)
+                            @Html.DisplayFor(m => item.MedicoId)
                         </td>
                         <td>
                             @Html.DisplayFor(m => item.FechaTurno)
                         </td>
                         <td>
-                            @Html.DisplayFor(m => item.HoraTurno)
+                            @Html.DisplayFor(m => item.Hora)
                         </td>
                         <td>
                             <a asp-route-id="@item.TurnoId" asp-page="Editar" class="btn btn-warning btn-sm">
