@@ -19,60 +19,125 @@
     <div class="card-body px-0 pb-0">
         @if (Model.Turnos.Count() > 0)
         {
-            <table class="table table-striped border mb-0">
-                <tr class="table-secondary">
-                    <th>
-                        Turno
-                    </th>
-                    <th>
-                        Paciente
-                    </th>
-                    <th>
-                        Medico
-                    </th>
-                    <th>
-                        Fecha
-                    </th>
-                    <th>
-                        Hora
-                    </th>
-                    <th>
-                        Acciones
-                    </th>
-                </tr>
-                @foreach (var item in Model.Turnos)
+        <table class="table table-striped border mb-0">
+            <tr class="table-secondary">
+                <th>
+                    Turno
+                </th>
+                <th>
+                    Paciente
+                </th>
+                <th>
+                    Medico
+                </th>
+                <th>
+                    Fecha
+                </th>
+                <th>
+                    Hora
+                </th>
+                <th>
+                    Estado
+                </th>
+                <th>
+                    Acciones
+                </th>
+            </tr>
+            @foreach (var item in Model.Turnos)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(m => item.TurnoId)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(m => item.PacienteId)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(m => item.MedicoId)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(m => item.FechaTurno)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(m => item.Hora)
-                        </td>
-                        <td>
-                            <a asp-route-id="@item.TurnoId" asp-page="Editar" class="btn btn-warning btn-sm">
-                                Editar
-                            </a>
-                            <button asp-page-handler="Borrar" asp-route-id="@item.TurnoId" onClick="return confirm('¿Está seguro de querer borrar el curso?')" class="btn btn-danger btn-sm">
-                                Borrar
-                            </button>
-                        </td>
-                    </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(m => item.TurnoId)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.PacienteId)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.MedicoId)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.FechaTurno)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.Hora.HoraTurno)
+                </td>
+                @if (item.Estado == 1)
+                            {
+                <td>Agendado</td>
+                            }else if (item.Estado == 2)
+                            {
+                <td>Realizado</td>
+                            }
+                            else
+                            {
+                <td>Cancelado</td>
+                            }
+                @if (item.Estado == 1)
+                        {
+                <td>
+                    <button class="btn btn-warning"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalReprogramar_@item.TurnoId">
+                        Reprogramar
+                    </button>
+
+                    <form method="post">
+                        <button type="submit"
+                                class="btn btn-danger btn-sm"
+                                asp-page-handler="Cancelar"
+                                asp-route-TurnoId="@item.TurnoId"
+                                onclick="return confirm('¿Seguro que quiere cancelar este turno?');">
+                            Cancelar
+                        </button>
+                    </form>
+                </td>
+                        }
+                        else
+                        {
+                <td>
+                    <button class="btn btn-warning btn-sm" disabled>Editar</button>
+                    <button class="btn btn-danger btn-sm" disabled>Cancelar</button>
+                </td>
+                        }
+            </tr>
+            <div class="modal fade" id="modalReprogramar_@item.TurnoId" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Reprogramar consulta</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Hora actual: @Html.DisplayFor(m => item.Hora.HoraTurno)</p>
+                            <p>Nueva hora:</p>
+                            <form method="post">
+
+                                <input type="hidden" name="TurnoId" value="@item.TurnoId" />
+
+                                <select name="HoraId">
+                                    @foreach (var hora in item.Medico.Horas.Where(h => !Model.Turnos.Any(t => t.HoraId == h.HoraId&& t.MedicoId == item.MedicoId && t.Estado == 1)))
+                                        {
+                                    <option value="@hora.HoraId">@hora.HoraTurno</option>
+                                        }
+                                </select>
+                                <button type="submit"
+                                        class="btn btn-success btn-sm"
+                                        asp-page-handler="Reprogramar"
+                                        onclick="return confirm('¿Seguro que quiere reprogramar este turno?');">
+                                    Reprogramar
+                                </button>
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
                 }
-            </table>
+        </table>
         }
         else
         {
-            <p>No hay cursos disponibles</p>
+        <p>No hay cursos disponibles</p>
         }
     </div>
 </div>
