@@ -3,3 +3,120 @@
 @{
     ViewData["Title"] = "Agendar Consulta";
 }
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="Text-info">Agendar nueva Consulta</h2>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="container" style="padding:30px;">
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" asp-for="Turno.PacienteId"></label>
+                    <select id="PacienteId" asp-for="Turno.PacienteId" asp-items="Model.PacientesSelect" class="form-control mb-2">
+                        <option disabled selected value="">Seleccione un Paciente</option>
+                    </select>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" asp-for="Turno.MedicoId"></label>
+                    <select id="MedicoId" asp-for="Turno.MedicoId" asp-items="Model.MedicosSelect" class="form-control mb-2">
+                        <option disabled selected value="">Seleccione un Médico</option>
+                    </select>
+                    <span asp-validation-for="Turno.MedicoId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" asp-for="Turno.FechaTurno"></label>
+                    <input id="FechaTurno" name="FechaTurno" type="date" class="form-control mb-2" />
+
+                    <!-- Script para limitar a nivel del cliente la seleccion de la fecha a solo dias de la semana, funciona en conjunto con un limite a nivel servidor -->
+                    <script>
+                        document.getElementById("FechaTurno").addEventListener("change", function() {
+                            const seleccion = new Date(this.value);
+                            const dia = seleccion.getDay();
+
+                            if (dia === 0 || dia === 6) {
+                                alert("Los dias de atención son de lunes a viernes.");
+                                this.value = "";
+                            }
+                        });
+                    </script>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" asp-for="Turno.Hora"></label>
+                    <select id="HoraId" asp-for="Turno.HoraId" class="form-control mb-2">
+                        <option disabled selected value="">Seleccione una hora</option>
+                    </select>
+                    <span asp-validation-for="Turno.HoraId" class="text-danger"></span>
+
+                    <!-- Script que pobla el select en tiempo real con las horas del medico seleccionado dependiendo de la fecha seleccionada -->
+                    <script>
+                        async function cargarHoras() {
+                            var medicoId = document.getElementById("MedicoId").value;
+                            var fecha = document.getElementById("FechaTurno").value;
+
+                            if (!medicoId || !fecha) return;
+
+                            try {
+                                const url = `?handler=HorasDisponibles&medicoId=${encodeURIComponent(medicoId)}&fecha=${encodeURIComponent(fecha)}`;
+                                const response = await fetch(url);
+                                if (!response.ok) {
+                                    console.error("Fetch failed:", response.status, response.statusText);
+                                    return;
+                                }
+
+                                const data = await response.json();
+                                var seleccion = document.getElementById("HoraId");
+                                seleccion.innerHTML = "";
+
+                                if (!data || data.length === 0) {
+                                    var noOption = document.createElement("option");
+                                    noOption.disabled = true;
+                                    noOption.selected = true;
+                                    noOption.value = "";
+                                    noOption.text = "No hay horarios disponibles";
+                                    seleccion.appendChild(noOption);
+                                    return;
+                                }
+
+                                var placeholder = document.createElement("option");
+                                placeholder.disabled = true;
+                                placeholder.selected = true;
+                                placeholder.value = "";
+                                placeholder.text = "Seleccione una hora";
+                                seleccion.appendChild(placeholder);
+
+                                data.forEach(h => {
+                                    var opcion = document.createElement("option");
+                                    opcion.value = h.horaId ?? h.HoraId ?? h.Id ?? "";
+                                    opcion.text = h.horaTurno ?? h.HoraTurno ?? h.Text ?? "";
+                                    seleccion.appendChild(opcion);
+                                });
+                            } catch (err) {
+                                console.error("Error cargando horas:", err);
+                            }
+                        }
+
+                        document.getElementById("MedicoId").addEventListener("change", cargarHoras);
+                        document.getElementById("FechaTurno").addEventListener("change", cargarHoras);
+                    </script>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-6 offset-sm-2">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <input type="submit" value=" Agendar Consulta " class="btn btn-primary btn-block" />
+                            </div>
+                            <div class="col-sm-6 text-right">
+                                <a asp-page="Index" class="btn btn-success">Volver a la lista</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -51,8 +51,6 @@ namespace Obligatorio2Prog2.Pages.GestionTurnos
             var turno = await _contexto.Turnos.FindAsync(TurnoId);
             //Se cambia el id de la hora para que se modifique la hora del turno
             turno.HoraId = HoraId;
-            //Se cambia la fecha del turno a la actual
-            //turno.FechaTurno = DateOnly.FromDateTime(DateTime.Now);
 
             //Se guardan los cambios en la BDD
             await _contexto.SaveChangesAsync();
