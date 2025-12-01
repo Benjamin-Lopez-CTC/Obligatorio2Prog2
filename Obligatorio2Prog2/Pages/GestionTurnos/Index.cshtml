@@ -77,21 +77,31 @@
                     {
                         <td>
                             <div class="d-flex gap-2">
-                            <button class="btn btn-warning btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalReprogramar_@item.TurnoId">
-                                Reprogramar
-                            </button>
-
-                            <form method="post">
-                                <button type="submit"
-                                        class="btn btn-danger btn-sm"
-                                        asp-page-handler="Cancelar"
-                                        asp-route-TurnoId="@item.TurnoId"
-                                        onclick="return confirm('¿Seguro que quiere cancelar este turno?');">
-                                    Cancelar
+                                <button class="btn btn-warning btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalReprogramar_@item.TurnoId">
+                                    Reprogramar
                                 </button>
-                            </form>
+
+                                <form method="post">
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            asp-page-handler="Cancelar"
+                                            asp-route-TurnoId="@item.TurnoId"
+                                            onclick="return confirm('¿Seguro que quiere cancelar este turno?');">
+                                        Cancelar
+                                    </button>
+                                </form>
+                                
+                                <form method="post">
+                                    <button type="submit"
+                                            class="btn btn-secondary btn-square "
+                                            asp-page-handler="Eliminar"
+                                            asp-route-TurnoId="@item.TurnoId"
+                                            onclick="return confirm('¿Seguro que quiere eliminar este turno?');">
+                                        <img src="~/Images/EliminarIco.png" class="" alt="Eliminar" />
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     }
@@ -101,9 +111,19 @@
                             <div class="d-flex gap-2">
                                 <button class="btn btn-outline-secondary btn-sm" disabled>Reprogramar</button>
                                 <button class="btn btn-outline-secondary btn-sm" disabled>Cancelar</button>
+                                <form method="post">
+                                <button type="submit"
+                                        class="btn btn-secondary btn-square"
+                                        asp-page-handler="Eliminar"
+                                        asp-route-TurnoId="@item.TurnoId"
+                                        onclick="return confirm('¿Seguro que quiere eliminar este turno?');">
+                                    <img src="~/Images/EliminarIco.png" class="" alt="Eliminar" />
+                                </button>
+                                </form>
                             </div>
                         </td>
                     }
+
                 </tr>
                 <div class="modal fade" id="modalReprogramar_@item.TurnoId" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">

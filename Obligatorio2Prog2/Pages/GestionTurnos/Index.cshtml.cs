@@ -58,5 +58,21 @@ namespace Obligatorio2Prog2.Pages.GestionTurnos
             //Se refresca la pagina
             return RedirectToPage();
         }
+
+        // Metodo para eliminar el turno
+        // Se pide el TurnoId
+        public async Task<IActionResult> OnPostEliminar(int TurnoId)
+        {
+            var turno = await _contexto.Turnos.FindAsync(TurnoId);
+
+            if (turno == null)
+            {
+                return NotFound();
+            }
+            _contexto.Turnos.Remove(turno);
+            await _contexto.SaveChangesAsync();
+            // No redirige a ninguna pagina, simplemente la recarga
+            return RedirectToPage();
+        }
     }
 }

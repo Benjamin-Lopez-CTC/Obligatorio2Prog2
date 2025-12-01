@@ -20,3 +20,19 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.btn-square {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .25rem;
+    height: 1.9rem; 
+    width: 1.9rem; 
+    border-radius: .375rem; 
+}
+
+.btn-square img {
+    max-width: 70%;
+    height: auto;
+    display: block;
+}
