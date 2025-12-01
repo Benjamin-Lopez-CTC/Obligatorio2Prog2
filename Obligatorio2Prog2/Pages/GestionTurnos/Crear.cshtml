@@ -11,11 +11,14 @@
     <div class="card-body">
         <form method="post">
             <div class="container" style="padding:30px;">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label" asp-for="Turno.PacienteId"></label>
                     <select id="PacienteId" asp-for="Turno.PacienteId" asp-items="Model.PacientesSelect" class="form-control mb-2">
                         <option disabled selected value="">Seleccione un Paciente</option>
                     </select>
+                    <span asp-validation-for="Turno.PacienteId" class="text-danger"></span>
                 </div>
 
                 <div class="form-group row">
@@ -28,19 +31,41 @@
 
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label" asp-for="Turno.FechaTurno"></label>
-                    <input id="FechaTurno" name="FechaTurno" type="date" class="form-control mb-2" />
+                    <input id="FechaTurno" type="date" asp-for="Turno.FechaTurno" class="form-control mb-2" />
+                    <span asp-validation-for="Turno.FechaTurno" class="text-danger"></span>
 
                     <!-- Script para limitar a nivel del cliente la seleccion de la fecha a solo dias de la semana, funciona en conjunto con un limite a nivel servidor -->
                     <script>
                         document.getElementById("FechaTurno").addEventListener("change", function() {
                             const seleccion = new Date(this.value);
-                            const dia = seleccion.getDay();
+                            const dia = seleccion.getUTCDay();
+                            const tomorrow = new Date();
+                            tomorrow.setDate(tomorrow.getDate() + 1);
+
+                            if (seleccion < tomorrow)
+                            {
+                                alert("Las consultas solo se pueden agendar con 24 horas de anticipación");
+                                this.value = "";
+                                return;
+                            }
 
                             if (dia === 0 || dia === 6) {
                                 alert("Los dias de atención son de lunes a viernes.");
                                 this.value = "";
+                                return;
                             }
                         });
+
+                        // Limitar la fecha que agendar para que tenga 24 horas de anticipación
+                        let FechaTurno = document.getElementById("FechaTurno");
+
+                        let diaDesp = new Date();
+                        diaDesp.setDate(diaDesp.getDate() + 2);
+                        let dd = String(diaDesp.getDate()).padStart(2, '0');
+                        let mm = String(diaDesp.getMonth() + 1).padStart(2, '0');
+                        let yyyy = diaDesp.getFullYear();
+                        let minDate = `${yyyy}-${mm}-${dd}`;
+                        FechaTurno.min = minDate;
                     </script>
                 </div>
 
@@ -120,3 +145,7 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
