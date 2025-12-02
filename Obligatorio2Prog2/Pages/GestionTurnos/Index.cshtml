@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <!-- Tabla de turnos -->
+    <!-- Tabla de turnos. -->
     <div class="card-body px-0 pb-0">
         @if (Model.Turnos.Count() > 0)
         {
@@ -142,11 +142,11 @@
                                             <p>Nueva hora:</p>
 
                                             <select name="HoraId">
-                                        @foreach (var hora in item.Medico.Horas.Where(h => !Model.Turnos.Any(t => t.HoraId == h.HoraId&& t.MedicoId == item.MedicoId && t.Estado == 1)))
+                                                @foreach (var hora in item.Medico.Horas.Where(h => !Model.Turnos.Any(t => t.HoraId == h.HoraId && t.MedicoId == item.MedicoId && t.Estado == 1 && t.FechaTurno == item.FechaTurno)))
                                             {
-                                        <option value="@hora.HoraId">@hora.HoraTurno</option>
+                                                <option value="@hora.HoraId">@hora.HoraTurno</option>
                                             }
-                                        </select>
+                                            </select>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="submit"

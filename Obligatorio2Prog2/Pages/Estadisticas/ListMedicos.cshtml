@@ -3,3 +3,77 @@
 @{
     ViewData["Title"] = "Listado de Médicos";
 }
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="m-0">Lista de Medicos</h2>
+            <!-- Barra de busqueda -->
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" name="buscar" placeholder="Matricula, Nombre o Apellido" value="@Model.Buscar" />
+                <button class="btn btn-outline-success" type="submit">Buscar</button>
+            </form>
+            <!-- Select para ordenar el listado -->
+            <form method="post" asp-page-handler="Ordenar">
+                <!-- Por cada especialidad guardada en la propiedad Especialidades crea un opcion. -->
+                <select name="especialidad" onchange="this.form.submit()">
+                    <option value="">Seleccione una opcion...</option>
+                    <option value="todos">Mostrar todos</option>
+                    @foreach (var esp in Model.Especialidades)
+                    {
+                    <option value="@esp">@esp</option>
+                    }
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Medicos -->
+    <div class="card-body px-0 pb-0">
+        @if (Model.Medicos.Count() > 0)
+        {
+        <table class="table table-striped border mb-0">
+            <tr class="table-secondary">
+                <th>
+                    ID
+                </th>
+                <th>
+                    Nombre
+                </th>
+                <th>
+                    Apellido
+                </th>
+                <th>
+                    Matricula
+                </th>
+                <th>
+                    Especialidad
+                </th>
+            </tr>
+            @foreach (var item in Model.Medicos)
+                {
+            <tr>
+                <td>
+                    @Html.DisplayFor(m => item.MedicoId)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.NombreM)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.ApellidoM)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.MatriculaM)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.EspecialidadM)
+                </td>
+            </tr>
+                }
+        </table>
+        }
+        else
+        {
+        <p>No hay medicos registrados</p>
+        }
+    </div>
+</div>
