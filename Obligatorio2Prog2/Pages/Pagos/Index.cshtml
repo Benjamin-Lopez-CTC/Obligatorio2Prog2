@@ -3,3 +3,94 @@
 @{
     ViewData["Title"] = "Pagos de Turnos";
 }
+
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-start align-items-center">
+            <h2 class="m-0">Lista de turnos</h2>
+        </div>
+    </div>
+
+    <!-- Tabla de turnos, cada turno tiene un boton que permite registrar el pago -->
+    <div class="card-body px-0 pb-0">
+        @if (Model.Turnos.Count() > 0)
+        {
+        <table class="table table-striped border mb-0 w-100">
+            <tr class="table-secondary">
+                <th>
+                    Turno
+                </th>
+                <th>
+                    Paciente
+                </th>
+                <th>
+                    Medico
+                </th>
+                <th>
+                    Fecha
+                </th>
+                <th>
+                    Hora
+                </th>
+                <th>
+                    Estado
+                </th>
+                <th>
+                    Acciones
+                </th>
+            </tr>
+            @foreach (var item in Model.Turnos)
+            {
+                @if (item.Estado == 1)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(m => item.TurnoId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.PacienteId). @Html.DisplayFor(m => item.Paciente.NombreP) @Html.DisplayFor(m => item.Paciente.ApellidoP)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.MedicoId). @Html.DisplayFor(m => item.Medico.NombreM) @Html.DisplayFor(m => item.Medico.ApellidoM)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.FechaTurno)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.Hora!.HoraTurno)
+                        </td>
+                        @if (item.Estado == 1)
+                        {
+                            <td>Agendado</td>
+                        }
+                        else if (item.Estado == 2)
+                        {
+                            <td>Realizado</td>
+                        }
+                        else
+                        {
+                            <td>Cancelado</td>
+                        }
+                        @if (item.PagoId == 0)
+                        {
+                            <td>
+                                <button class="btn btn-success btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalPagar_@item.TurnoId">
+                                    Pagar
+                                </button>
+                            </td>
+                        }
+                        else 
+                        {
+                            <td>
+                                <button class="btn btn-outline-secondary btn-sm" disabled>Pagar</button>
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+        </table>
+        }
+    </div>
+</div>

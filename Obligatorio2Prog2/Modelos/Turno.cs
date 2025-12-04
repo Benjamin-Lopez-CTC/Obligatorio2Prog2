@@ -36,9 +36,8 @@ namespace Obligatorio2Prog2.Modelos
         public int HoraId { get; set; }
         public Hora? Hora { get; set; }
 
-        [DefaultValue(null)]
         [ForeignKey(nameof(Pago))]
-        public int? PagoId { get; set; } = null;
-        public Pago? Pago { get; set; } = null;
+        public int PagoId { get; set; } = 0;
+        public Pago? Pago { get; set; }
     }
 }

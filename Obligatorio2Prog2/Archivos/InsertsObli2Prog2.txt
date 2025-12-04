@@ -1,0 +1,200 @@
+use Obli2Prog2;
+
+SET NOCOUNT ON;
+SET DATEFORMAT ymd;
+SET XACT_ABORT ON;
+
+BEGIN TRANSACTION;
+BEGIN TRY
+
+-- 1) Insert 10 Medicos and capture their Ids
+DECLARE @InsertedMedicos TABLE (Idx INT IDENTITY(1,1), MedicoId INT);
+
+INSERT INTO Medicos (NombreM, ApellidoM, EspecialidadM, MatriculaM, NombreUsuarioM, ContraseniaM)
+OUTPUT inserted.MedicoId INTO @InsertedMedicos(MedicoId)
+VALUES
+('Ana',   'Gonzalez', 'Cardiologia',   'M00001', 'ana.g',   'Pass1234A'),
+('Bruno', 'Martinez', 'Pediatria',     'M00002', 'bruno.m', 'Pass1234B'),
+('Cecilia','Lopez',   'Dermatologia',  'M00003', 'ceci.l',  'Pass1234C'),
+('Diego', 'Perez',    'Traumatologia', 'M00004', 'diego.p', 'Pass1234D'),
+('Estela','Ruiz',     'Cardiologia',   'M00005', 'estela.r','Pass1234E'),
+('Facu',  'Sosa',     'Pediatria',     'M00006', 'facu.s',  'Pass1234F'),
+('Gabri','Fernandez', 'Dermatologia',  'M00007', 'gabri.f', 'Pass1234G'),
+('Hugo',  'Diaz',     'Traumatologia', 'M00008', 'hugo.d',  'Pass1234H'),
+('Iris',  'Ruiz',     'Cardiologia',   'M00009', 'iris.r',  'Pass1234I'),
+('Javier','Ortega',   'Pediatria',     'M00010', 'javi.o',  'Pass1234J');
+
+-- 2) Define 10 distinct 8-hour shifts
+DECLARE @Shifts TABLE (Idx INT, StartTime TIME, EndTime TIME);
+INSERT INTO @Shifts (Idx, StartTime, EndTime) VALUES
+(1, '07:00', '15:00'),
+(2, '07:30', '15:30'),
+(3, '08:00', '16:00'),
+(4, '08:30', '16:30'),
+(5, '09:00', '17:00'),
+(6, '09:30', '17:30'),
+(7, '10:00', '18:00'),
+(8, '10:30', '18:30'),
+(9, '11:00', '19:00'),
+(10,'11:30', '19:30');
+
+-- 3) Generate 30-minute slots for each medico according to its shift
+DECLARE @Idx INT, @MedicoId INT;
+DECLARE MedCursor CURSOR FOR
+    SELECT Idx, MedicoId FROM @InsertedMedicos ORDER BY Idx;
+OPEN MedCursor;
+FETCH NEXT FROM MedCursor INTO @Idx, @MedicoId;
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    DECLARE @start DATETIME = CAST((SELECT StartTime FROM @Shifts WHERE Idx = @Idx) AS DATETIME);
+    DECLARE @end   DATETIME = CAST((SELECT EndTime   FROM @Shifts WHERE Idx = @Idx) AS DATETIME);
+    DECLARE @current DATETIME = @start;
+
+    WHILE @current < @end
+    BEGIN
+        INSERT INTO Horas (HoraTurno, MedicoId)
+        VALUES (CONVERT(CHAR(5), @current, 108), @MedicoId); -- 'HH:mm'
+        SET @current = DATEADD(minute, 30, @current);
+    END
+
+    FETCH NEXT FROM MedCursor INTO @Idx, @MedicoId;
+END
+CLOSE MedCursor;
+DEALLOCATE MedCursor;
+
+-- 4) Insert 20 Pacientes and capture Ids
+DECLARE @InsertedPacientes TABLE (Idx INT IDENTITY(1,1), PacienteId INT);
+
+INSERT INTO Pacientes (NombreP, ApellidoP, NumDocumentoP, FechaNacP, TelefonoP, EmailP, ObraSocialP, NombreUsuarioP, ContraseniaP)
+OUTPUT inserted.PacienteId INTO @InsertedPacientes(PacienteId)
+VALUES
+('Pedro','Alvez','12345678','1985-04-12','09912345','pedro.alvez@example.com','ObraSalud1','pedroa','Pac1PassA'),
+('María','Blanco','87654321','1990-06-30','09922334','maria.blanco@example.com','ObraSalud2','mariab','Pac2PassA'),
+('Lucia','Cano','11223344','1978-01-05','09933445','lucia.cano@example.com','ObraSalud3','luciac','Pac3PassA'),
+('Mateo','Duarte','22334455','1995-09-17','09944556','mateo.duarte@example.com','ObraSalud4','mateod','Pac4PassA'),
+('Sofia','Estevez','33445566','2000-12-01','09955667','sofia.estevez@example.com','ObraSalud5','sofiae','Pac5PassA'),
+('Lucas','Franco','44556677','1982-03-22','09966778','lucas.franco@example.com','ObraSalud6','lucasf','Pac6PassA'),
+('Valentina','Garcia','55667788','1998-11-11','09977889','valentina.g@example.com','ObraSalud7','valentinag','Pac7PassA'),
+('Nicolas','Hernandez','66778899','1989-07-07','09988990','nicolas.h@example.com','ObraSalud8','nicolash','Pac8PassA'),
+('Camila','Iglesias','77889900','1975-02-28','09999001','camila.i@example.com','ObraSalud9','camilai','Pac9PassA'),
+('Diego','Juarez','88990011','1992-08-08','09812345','diego.j@example.com','ObraSalud10','diegoj','Pac10PassA'),
+('Paula','Klein','99001122','1987-05-05','09822334','paula.k@example.com','ObraSalud11','paulak','Pac11PassA'),
+('Raul','Lopez','10111213','1969-10-10','09833445','raul.l@example.com','ObraSalud12','raulL','Pac12PassA'),
+('Elena','Marin','12131415','1994-04-04','09844556','elena.m@example.com','ObraSalud13','elenam','Pac13PassA'),
+('Alvaro','Nunez','13141516','1980-01-20','09855667','alvaro.n@example.com','ObraSalud14','alvaron','Pac14PassA'),
+('Ines','Ocampo','14151617','2002-09-09','09866778','ines.o@example.com','ObraSalud15','ineso','Pac15PassA'),
+('Joaquin','Paz','15161718','1976-06-06','09877889','joaquin.p@example.com','ObraSalud16','joaqp','Pac16PassA'),
+('Rocio','Quintero','16171819','1991-03-03','09888990','rocio.q@example.com','ObraSalud17','rocioq','Pac17PassA'),
+('Sebastian','Ramos','17181920','1984-12-12','09712345','seb.r@example.com','ObraSalud18','sebr','Pac18PassA'),
+('Florencia','Suarez','18192021','1999-02-02','09722334','flor.s@example.com','ObraSalud19','flors','Pac19PassA'),
+('Hernan','Torres','19202122','1972-07-07','09733445','hernan.t@example.com','ObraSalud20','hernant','Pac20PassA');
+
+-- 5) Insert 2 Recepcionistas
+INSERT INTO Recepcionistas (NombreR, ApellidoR, NumDocumentoR, NombreUsuarioR, ContraseniaR)
+VALUES
+('Lorena','Vega','20123456','lorena.v','Recep1A'),
+('Mario','Zapata','21123456','mario.z','Recep2A');
+
+-- 6) Insert 2 Pagos and capture Ids
+DECLARE @InsertedPagos TABLE (Idx INT IDENTITY(1,1), PagoId INT);
+
+INSERT INTO Pagos (FechaPago, MontoPago, MetodoPago)
+OUTPUT inserted.PagoId INTO @InsertedPagos(PagoId)
+VALUES
+('2025-11-10', 1500, 'Efectivo'),
+('2025-11-12', 2500, 'Debito');
+
+-- 7) Insert 10 Turnos coherent with states (1 = scheduled future, 2 = done past, 3 = cancelled)
+DECLARE @pId INT, @mId INT, @hId INT, @payId INT;
+
+-- Turno 1
+SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 1;
+SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 1;
+SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '09:00');
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
+VALUES (@pId, @mId, '2025-12-05', 1, @hId);
+
+-- Turno 2
+SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 2;
+SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 2;
+SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '10:30');
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId) VALUES (@pId, @mId, '2025-12-06', 1, @hId);
+
+-- Turno 3 (done) with pago 1
+SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 3;
+SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 3;
+SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '08:30');
+SELECT @payId = PagoId FROM @InsertedPagos WHERE Idx = 1;
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId, PagoId)
+VALUES (@pId, @mId, '2025-11-10', 2, @hId, @payId);
+
+-- Turno 4 (done) with pago 2
+SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 4;
+SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 4;
+SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '11:00');
+SELECT @payId = PagoId FROM @InsertedPagos WHERE Idx = 2;
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId, PagoId)
+VALUES (@pId, @mId, '2025-11-12', 2, @hId, @payId);
+
+-- Turno 5 (cancelled)
+SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 5;
+SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 5;
+SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '14:30');
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
+VALUES (@pId, @mId, '2025-11-20', 3, @hId);
+
+-- Turno 6
+SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 6;
+SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 6;
+SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '09:30');
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
+VALUES (@pId, @mId, '2025-12-07', 1, @hId);
+
+-- Turno 7 (done)
+SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 7;
+SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 7;
+SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '16:00');
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
+VALUES (@pId, @mId, '2025-11-08', 2, @hId);
+
+-- Turno 8 (cancelled)
+SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 8;
+SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 8;
+SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '12:30');
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
+VALUES (@pId, @mId, '2025-11-20', 3, @hId);
+
+-- Turno 9
+SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 9;
+SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 9;
+SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '11:30');
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
+VALUES (@pId, @mId, '2025-12-10', 1, @hId);
+
+-- Turno 10
+SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 10;
+SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 10;
+SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '13:00');
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
+VALUES (@pId, @mId, '2025-12-11', 1, @hId);
+
+-- 8) Simple counts for verification
+SELECT 'Medicos' AS Entity, COUNT(*) AS Total FROM Medicos;
+SELECT 'Horas'   AS Entity, COUNT(*) AS Total FROM Horas;
+SELECT 'Pacientes' AS Entity, COUNT(*) AS Total FROM Pacientes;
+SELECT 'Recepcionistas' AS Entity, COUNT(*) AS Total FROM Recepcionistas;
+SELECT 'Pagos' AS Entity, COUNT(*) AS Total FROM Pagos;
+SELECT 'Turnos' AS Entity, COUNT(*) AS Total FROM Turnos;
+
+COMMIT TRANSACTION;
+PRINT 'Seed data inserted successfully.';
+
+END TRY
+BEGIN CATCH
+    IF XACT_STATE() <> 0
+        ROLLBACK TRANSACTION;
+
+    DECLARE @ErrMsg NVARCHAR(4000) = ERROR_MESSAGE();
+    DECLARE @ErrNum INT = ERROR_NUMBER();
+    RAISERROR('Seed failed. Error %d: %s', 16, 1, @ErrNum, @ErrMsg);
+END CATCH;

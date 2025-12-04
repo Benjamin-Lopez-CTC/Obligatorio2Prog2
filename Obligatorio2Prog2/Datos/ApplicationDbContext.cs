@@ -44,12 +44,11 @@ namespace Obligatorio2Prog2.Datos
                 .HasForeignKey(t => t.PacienteId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Turno -> Pago : one-to-one con FK nullable -> SetNull al borrar Pago
+            // Turno -> Pago : uno a uno con FK por defecto 0
             modelBuilder.Entity<Turno>()
-                .HasOne(t => t.Pago)
-                .WithOne()
-                .HasForeignKey<Turno>(t => t.PagoId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .Property(t => t.PagoId)
+                .HasDefaultValue(0)
+                .IsRequired();
 
             base.OnModelCreating(modelBuilder);
         }
