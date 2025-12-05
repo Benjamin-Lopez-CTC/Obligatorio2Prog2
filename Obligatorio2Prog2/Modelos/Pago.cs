@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Obligatorio2Prog2.Modelos
@@ -13,11 +14,13 @@ namespace Obligatorio2Prog2.Modelos
         [DataType(DataType.Date)]
         public DateOnly FechaPago { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Ingrese un monto")]
+        [Display(Name = "Monto")]
         [Range(1, 100000, ErrorMessage = "Ingrese un monto válido")]
         public int MontoPago { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Seleccione una opción")]
+        [Display(Name = "Método de pago")]
         [RegularExpression("^(Efectivo|Debito|Credito|Transferencia)$", ErrorMessage = "Método de pago inválido")]
         public string MetodoPago { get; set; }
 

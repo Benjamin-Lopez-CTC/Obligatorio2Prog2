@@ -41,7 +41,7 @@
             </tr>
             @foreach (var item in Model.Turnos)
             {
-                @if (item.Estado == 1)
+                @if (item.Estado != 3)
                 {
                     <tr>
                         <td>
@@ -79,6 +79,56 @@
                                         data-bs-target="#modalPagar_@item.TurnoId">
                                     Pagar
                                 </button>
+
+                                <div class="modal fade" id="modalPagar_@item.TurnoId" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal modal-dialog-centered modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Registrar pago</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Persona a nombre del turno: @Html.DisplayFor(m => item.Paciente.NombreP) @Html.DisplayFor(m => item.Paciente.ApellidoP)</p>
+                                                <form method="post">
+
+                                                    <input type="hidden" name="TurnoId" value="@item.TurnoId" />
+
+                                                    <div class="mb-4 gap-2">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-3 col-form-label" asp-for="Pago.MontoPago"></label>
+                                                            <input type="number" id="MontoPago" asp-for="Pago.MontoPago" min="1" max="100000" class="form-control mb-2" />
+                                                            <span asp-validation-for="Pago.MontoPago" class="text-danger"></span>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="col-sm-5 col-form-label" asp-for="Pago.MetodoPago"></label>
+                                                            <select id="MetodoPago" asp-for="Pago.MetodoPago" class="form-control mb-2">
+                                                                <option disabled selected value="">Seleccione un metodo de pago</option>
+                                                                <option value="Efectivo">Efectivo</option>
+                                                                <option value="Debito">Débito</option>
+                                                                <option value="Credito">Crédito</option>
+                                                                <option value="Transferencia">Transferencia bancaria</option>
+                                                            </select>
+                                                            <span asp-validation-for="Pago.MetodoPago" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="modal-footer">
+                                                        <button type="submit"
+                                                                class="btn btn-success"
+                                                                asp-page-handler="Pagar"
+                                                                onclick="return confirm('¿Seguro que quiere pagar esta consulta?');">
+                                                            Pagar
+                                                        </button>
+                                                    </div>
+
+                                                </form>
+
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         }
                         else 
@@ -94,3 +144,13 @@
         }
     </div>
 </div>
+
+<!-- script que ejecuta un alert cuando se envia el formulario de pago -->
+<script type="text/javascript">
+    window.onload = function () {
+        var mensaje = "@ViewData["Mensaje"]";
+        if (mensaje && mensaje.length > 0) {
+            alert(mensaje);
+        }
+    };
+</script>
