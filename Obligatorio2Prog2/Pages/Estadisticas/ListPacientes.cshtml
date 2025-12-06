@@ -7,22 +7,48 @@
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
             <h2 class="m-0">Lista de Pacientes</h2>
-            <!-- Barra de busqueda -->
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" name="buscar" placeholder="CI, Nombre o Apellido" value="@Model.Buscar" />
-                <button class="btn btn-outline-success" type="submit">Buscar</button>
-            </form>
-            <!-- Select para ordenar el listado. -->
+            <div class="d-flex align-items-center">
+
+                <!-- Buscar -->
+                <form class="d-flex" method="get" role="search">
+                    <input class="form-control me-2"
+                           type="search"
+                           name="buscar"
+                           placeholder="CI, Nombre o Apellido"
+                           value="@Model.Buscar" />
+
+                    <button class="btn btn-outline-success me-2" type="submit">
+                        Buscar
+                    </button>
+                </form>
+
+                <!-- Borrar busqueda-->
+                @if (string.IsNullOrWhiteSpace(Model.Buscar))
+                {
+                <button class="btn btn-outline-danger disabled">
+                    <i class="bi bi-x-circle"></i>
+                </button>
+                }
+                else
+                {
+                <form method="post" asp-page-handler="BorrarBusqueda">
+                    <button class="btn btn-outline-danger" type="submit">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </form>
+                }
+            </div>
+
+            <!-- Ordenar -->
             <form method="post" asp-page-handler="Ordenar">
                 <select name="categoria" onchange="this.form.submit()">
-                    <option value="">Ordenar por...</option>
+                    <option value="" selected disabled>Ordenar por...</option>
                     <option value="NombreP">Ordenar por nombre (a-z)</option>
                     <option value="NombrePDesc">Ordenar por nombre (z-a)</option>
                     <option value="ApellidoP">Ordenar por apellido (a-z)</option>
                     <option value="ApellidoPDesc">Ordenar por apellido (z-a)</option>
                 </select>
             </form>
-
         </div>
     </div>
 

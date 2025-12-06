@@ -3,21 +3,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Obligatorio2Prog2.Datos;
 using Obligatorio2Prog2.Modelos;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace Obligatorio2Prog2.Pages.Estadisticas
+namespace Obligatorio2Prog2.Pages.GestionTurnos
 {
-    public class ListMedicosModel : PageModel
+    public class DisponibilidadModel : PageModel
     {
         private readonly ApplicationDbContext _contexto;
-        public ListMedicosModel(ApplicationDbContext contexto)
+        public DisponibilidadModel(ApplicationDbContext contexto)
         {
             _contexto = contexto;
         }
         public IEnumerable<Medico> Medicos { get; set; }
-
-        public IEnumerable<Turno> Turnos { get; set; }
 
         //Lista con todas las especialidades
         public List<string> Especialidades { get; set; } = new();
@@ -28,32 +24,35 @@ namespace Obligatorio2Prog2.Pages.Estadisticas
 
         public async Task OnGet()
         {
-            var MedicosDB = _contexto.Medicos.AsQueryable();
-            //Guarda en especialidades cada especialidad de los medicos sin repetir
-            Especialidades = _contexto.Medicos.Select(m => m.EspecialidadM).Distinct().ToList();
+            var MedicosDB = _contexto.Medicos
+                .Include(m => m.Horas)
+                .AsQueryable();
 
-            //Si hay un busqueda...
+            //Guarda en especialidades cada especialidad de los medicos sin repetir
+            Especialidades = await _contexto.Medicos
+                .Select(m => m.EspecialidadM)
+                .Distinct()
+                .ToListAsync();
+
+            // Si hay una busqueda...
             if (!string.IsNullOrWhiteSpace(Buscar))
             {
-                //Quita los espacios vacios
                 Buscar = Buscar.ToLower().Replace(" ", "");
 
-                //Muestra solo los medicos que coincidan con la busqueda
-                MedicosDB = MedicosDB.Where(m => m.NombreM.ToLower().Replace(" ", "").Contains(Buscar)
-                || m.ApellidoM.ToLower().Replace(" ", "").Contains(Buscar)
-                || m.MatriculaM.Replace(" ", "").Contains(Buscar));
+                MedicosDB = MedicosDB.Where(m =>
+                    m.NombreM.ToLower().Replace(" ", "").Contains(Buscar) ||
+                    m.ApellidoM.ToLower().Replace(" ", "").Contains(Buscar) ||
+                    m.MatriculaM.Replace(" ", "").Contains(Buscar));
             }
 
-            //Guarda los medicos para que se muestren.
+            //Carga final
             Medicos = await MedicosDB.ToListAsync();
-
-            Turnos = await _contexto.Turnos.ToListAsync();
         }
 
 
         public async Task<IActionResult> OnPostOrdenar(string especialidad)
         {
-            IQueryable<Medico> MedicosDB = _contexto.Medicos;
+            IQueryable<Medico> MedicosDB = _contexto.Medicos.Include(m => m.Horas);
 
             //Si la opcion elegida no es Mostrar todos muestra solo los medicos que tengan de especialidad la elegida
             if (especialidad != "todos")
@@ -72,7 +71,7 @@ namespace Obligatorio2Prog2.Pages.Estadisticas
         public async Task<IActionResult> OnPostBorrarBusqueda()
         {
             //Prepara una consulta de medicos que se puede filtrar varias veces antes de ejecutarse
-            IQueryable<Medico> MedicosDB = _contexto.Medicos;
+            IQueryable<Medico> MedicosDB = _contexto.Medicos.Include(m => m.Horas);
             //Limpia la caja de busqueda
             Buscar = null;
             //Guarda en la lista de Medicos la consulta filtrada
@@ -80,6 +79,5 @@ namespace Obligatorio2Prog2.Pages.Estadisticas
             Especialidades = _contexto.Medicos.Select(m => m.EspecialidadM).Distinct().ToList();
             return Page();
         }
-
     }
 }

@@ -30,6 +30,7 @@ namespace Obligatorio2Prog2.Pages.Pagos
             .Include(t => t.Paciente)
             .Include(t => t.Medico).ThenInclude(m => m.Horas)
             .Include(t => t.Hora)
+            .Include(t => t.Pago)
             .ToListAsync();
         }
 

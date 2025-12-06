@@ -8,10 +8,16 @@
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
             <h2 class="m-0">Lista de turnos</h2>
-            <!-- Boton para ir a la pagina de agendar turnos -->
-            <a class="btn btn-success" asp-area="" asp-page="Crear">
-                Agendar Consulta
-            </a>
+            <div class="d-flex gap-2">
+                <!-- Boton para ir a la pagina de agendar turnos -->
+                <a class="btn btn-success" asp-area="" asp-page="Crear">
+                    Agendar Consulta
+                </a>
+                <!-- Boton para ir a la pagina de disponibilidad -->
+                <a class="btn btn-primary" asp-area="" asp-page="Disponibilidad">
+                    Ver disponibilidad
+                </a>
+            </div>
         </div>
     </div>
 
@@ -45,133 +51,133 @@
             </tr>
             @foreach (var item in Model.Turnos)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(m => item.TurnoId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => item.PacienteId). @Html.DisplayFor(m => item.Paciente.NombreP) @Html.DisplayFor(m => item.Paciente.ApellidoP)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => item.MedicoId). @Html.DisplayFor(m => item.Medico.NombreM) @Html.DisplayFor(m => item.Medico.ApellidoM)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => item.FechaTurno)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => item.Hora!.HoraTurno)
-                    </td>
-                    @if (item.Estado == 1)
+            <tr>
+                <td>
+                    @Html.DisplayFor(m => item.TurnoId)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.PacienteId). @Html.DisplayFor(m => item.Paciente.NombreP) @Html.DisplayFor(m => item.Paciente.ApellidoP)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.MedicoId). @Html.DisplayFor(m => item.Medico.NombreM) @Html.DisplayFor(m => item.Medico.ApellidoM)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.FechaTurno)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.Hora!.HoraTurno)
+                </td>
+                @if (item.Estado == 1)
                     {
-                        <td>Agendado</td>
+                <td>Agendado</td>
                     }
                     else if (item.Estado == 2)
                     {
-                        <td>Realizado</td>
+                <td>Realizado</td>
                     }
                     else
                     {
-                        <td>Cancelado</td>
+                <td>Cancelado</td>
                     }
-                    @if (item.Estado == 1)
+                @if (item.Estado == 1)
                     {
-                        <td>
-                            <div class="d-inline-flex gap-2 align-items-center">
-                                <button class="btn btn-warning btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalReprogramar_@item.TurnoId">
-                                    Reprogramar
-                                </button>
+                <td>
+                    <div class="d-inline-flex gap-2 align-items-center">
+                        <button class="btn btn-warning btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalReprogramar_@item.TurnoId">
+                            Reprogramar
+                        </button>
 
-                                <form method="post" class="m-0">
-                                    <button type="submit"
-                                            class="btn btn-danger btn-sm"
-                                            asp-page-handler="Cancelar"
-                                            asp-route-TurnoId="@item.TurnoId"
-                                            onclick="return confirm('¿Seguro que quiere cancelar este turno?');">
-                                        Cancelar
-                                    </button>
-                                </form>
-                                
-                                <form method="post" class="m-0">
-                                    <button type="submit"
-                                            class="btn btn-secondary btn-sm"
-                                            asp-page-handler="Eliminar"
-                                            asp-route-TurnoId="@item.TurnoId"
-                                            onclick="return confirm('¿Seguro que quiere eliminar este turno?');">
-                                        <i class="bi bi-trash3"></i>
-                                    </button>
-                                </form>
+                        <form method="post" class="m-0">
+                            <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    asp-page-handler="Cancelar"
+                                    asp-route-TurnoId="@item.TurnoId"
+                                    onclick="return confirm('¿Seguro que quiere cancelar este turno?');">
+                                Cancelar
+                            </button>
+                        </form>
 
-                                <!-- Modal que permite reprogramar la hora del turno seleccionado -->
-                                <div class="modal fade" id="modalReprogramar_@item.TurnoId" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Reprogramar consulta</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Hora actual: @Html.DisplayFor(m => item.Hora.HoraTurno)</p>                                
-                                                <form method="post">
+                        <form method="post" class="m-0">
+                            <button type="submit"
+                                    class="btn btn-secondary btn-sm"
+                                    asp-page-handler="Eliminar"
+                                    asp-route-TurnoId="@item.TurnoId"
+                                    onclick="return confirm('¿Seguro que quiere eliminar este turno?');">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
 
-                                                    <input type="hidden" name="TurnoId" value="@item.TurnoId" />
+                        <!-- Modal que permite reprogramar la hora del turno seleccionado -->
+                        <div class="modal fade" id="modalReprogramar_@item.TurnoId" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Reprogramar consulta</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Hora actual: @Html.DisplayFor(m => item.Hora.HoraTurno)</p>
+                                        <form method="post">
 
-                                                        <div class="d-flex align-items-center mb-3 gap-2">
-                                                            <p class="m-0 text-nowrap">Nueva hora:</p>
+                                            <input type="hidden" name="TurnoId" value="@item.TurnoId" />
 
-                                                            <select name="HoraId" class="form-select form-select-sm">
-                                                                @foreach (var hora in item.Medico.Horas.Where(h => !Model.Turnos.Any(t => t.HoraId == h.HoraId && 
-                                                                                                                                          t.MedicoId == item.MedicoId && 
-                                                                                                                                          t.Estado == 1 && 
+                                            <div class="d-flex align-items-center mb-3 gap-2">
+                                                <p class="m-0 text-nowrap">Nueva hora:</p>
+
+                                                <select name="HoraId" class="form-select form-select-sm">
+                                                    @foreach (var hora in item.Medico.Horas.Where(h => !Model.Turnos.Any(t => t.HoraId == h.HoraId &&
+                                                                                                                                          t.MedicoId == item.MedicoId &&
+                                                                                                                                          t.Estado == 1 &&
                                                                                                                                           t.FechaTurno == item.FechaTurno)))
                                                             {
-                                                                <option value="@hora.HoraId">@hora.HoraTurno</option>
+                                                    <option value="@hora.HoraId">@hora.HoraTurno</option>
                                                             }
-                                                            </select>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="submit"
-                                                                    class="btn btn-warning"
-                                                                    asp-page-handler="Reprogramar"
-                                                                    onclick="return confirm('¿Seguro que quiere reprogramar este turno?');">
-                                                                Reprogramar
-                                                            </button>
-                                                        </div>
-                                                </form>
+                                                </select>
                                             </div>
-                                        </div>
+                                            <div class="modal-footer">
+                                                <button type="submit"
+                                                        class="btn btn-warning"
+                                                        asp-page-handler="Reprogramar"
+                                                        onclick="return confirm('¿Seguro que quiere reprogramar este turno?');">
+                                                    Reprogramar
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
-                        </td>
+                        </div>
+                    </div>
+                </td>
                     }
                     else
                     {
-                        <td>
-                            <div class="d-inline-flex gap-2 align-items-center">
-                                <button class="btn btn-outline-secondary btn-sm" disabled>Reprogramar</button>
-                                <button class="btn btn-outline-secondary btn-sm" disabled>Cancelar</button>
-                                <form method="post" class="m-0">
-                                    <button type="submit"
-                                            class="btn btn-secondary btn-sm"
-                                            asp-page-handler="Eliminar"
-                                            asp-route-TurnoId="@item.TurnoId"
-                                            onclick="return confirm('¿Seguro que quiere eliminar este turno?');">
-                                        <i class="bi bi-trash3"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
+                <td>
+                    <div class="d-inline-flex gap-2 align-items-center">
+                        <button class="btn btn-outline-secondary btn-sm" disabled>Reprogramar</button>
+                        <button class="btn btn-outline-secondary btn-sm" disabled>Cancelar</button>
+                        <form method="post" class="m-0">
+                            <button type="submit"
+                                    class="btn btn-secondary btn-sm"
+                                    asp-page-handler="Eliminar"
+                                    asp-route-TurnoId="@item.TurnoId"
+                                    onclick="return confirm('¿Seguro que quiere eliminar este turno?');">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
                     }
 
-                </tr>
+            </tr>
             }
         </table>
         }
         else
         {
-            <p>No hay cursos disponibles</p>
+        <p>No hay cursos disponibles</p>
         }
     </div>
 </div>

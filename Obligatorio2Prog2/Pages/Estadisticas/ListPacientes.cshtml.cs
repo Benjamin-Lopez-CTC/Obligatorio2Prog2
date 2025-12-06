@@ -72,5 +72,17 @@ namespace Obligatorio2Prog2.Pages.Estadisticas
 
             return Page();
         }
+
+        public async Task<IActionResult> OnPostBorrarBusqueda()
+        {
+            //Prepara una consulta de pacientes que se puede filtrar varias veces antes de ejecutarse
+            IQueryable<Paciente> PacientesDB = _contexto.Pacientes;
+            //Limpia la caja de busqueda
+            Buscar = null;
+            //Guarda en la lista de Pacientes la consulta filtrada
+            Pacientes = await PacientesDB.ToListAsync();
+
+            return Page();
+        }
     }
 }

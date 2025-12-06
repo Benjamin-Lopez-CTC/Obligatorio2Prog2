@@ -1,0 +1,60 @@
+@page
+@model Obligatorio2Prog2.Pages.Estadisticas.TurnosFrecuentesModel
+@{
+    ViewData["Title"] = "Turnos frecuentes";
+}
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="m-0">Lista de Especialidades</h2>
+            <div class="d-flex align-items-center">
+            </div>
+            <!-- Select para ordenar -->
+            <form method="post" asp-page-handler="Ordenar">
+                <select name="orden" onchange="this.form.submit()">
+                    <option value="" selected disabled>Seleccione una opcion...</option>
+                    <option value="desc">Descendente</option>
+                    <option value="asc">Ascendente</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Especialidades -->
+    <div class="card-body px-0 pb-0">
+        @if (Model.Especialidades.Count() > 0)
+        {
+        <table class="table table-striped border mb-0">
+            <tr class="table-secondary">
+                <th>
+                    Especialidad
+                </th>
+                <th>
+                    Cantidad de turnos
+                </th>
+            </tr>
+            @foreach (var item in Model.Especialidades)
+                {
+            <tr>
+                <td>
+                    @item
+                </td>
+                <td>
+                    @{
+                                int cantTurnos = 0;
+                    }
+                    @foreach (var turno in Model.Turnos.Where(t => t.Medico != null && t.Medico!.EspecialidadM == item))
+                            {
+                                cantTurnos++;
+                            }
+                    @cantTurnos
+                </td>
+            </tr>
+                }
+        </table>
+        }
+        else
+        {
+        <p>No se encontraron especialidades</p>
+        }
+    </div>

@@ -1,7 +1,7 @@
-﻿@page
-@model Obligatorio2Prog2.Pages.Estadisticas.ListMedicosModel
+@page
+@model Obligatorio2Prog2.Pages.GestionTurnos.DisponibilidadModel
 @{
-    ViewData["Title"] = "Listado de Médicos";
+    ViewData["Title"] = "Disponibilidad";
 }
 <div class="card">
     <div class="card-header">
@@ -12,7 +12,7 @@
                 <!-- Buscar -->
                 <form class="d-flex" method="get" role="search">
                     <input class="form-control me-2" type="search" name="buscar"
-                           placeholder="Matricula, Nombre o Apellido"
+                           placeholder="Matricula o Nombre"
                            value="@Model.Buscar" />
 
                     <button class="btn btn-outline-success me-2" type="submit">
@@ -57,13 +57,7 @@
         <table class="table table-striped border mb-0">
             <tr class="table-secondary">
                 <th>
-                    ID
-                </th>
-                <th>
-                    Nombre
-                </th>
-                <th>
-                    Apellido
+                    Medico
                 </th>
                 <th>
                     Matricula
@@ -71,24 +65,41 @@
                 <th>
                     Especialidad
                 </th>
+                <th>
+                    Dias de consulta
+                </th>
+                <th>
+                    Horarios
+                </th>
             </tr>
             @foreach (var item in Model.Medicos)
                 {
             <tr>
                 <td>
-                    @Html.DisplayFor(m => item.MedicoId)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.NombreM)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.ApellidoM)
+                    @Html.DisplayFor(m => item.MedicoId). @Html.DisplayFor(m => item.NombreM) @Html.DisplayFor(m => item.ApellidoM)
                 </td>
                 <td>
                     @Html.DisplayFor(m => item.MatriculaM)
                 </td>
                 <td>
                     @Html.DisplayFor(m => item.EspecialidadM)
+                </td>
+                <td>
+                    Lunes - Viernes
+                </td>
+                <td>
+                    @{
+                            var horas = item.Horas.OrderBy(h => h.HoraTurno).ToList();
+                    }
+
+                    @if (horas.Any())
+                            {
+                    @horas.First().HoraTurno  @: - @horas.Last().HoraTurno
+                            }
+                            else
+                            {
+                    <span>Sin horarios</span>
+                            }
                 </td>
             </tr>
                 }

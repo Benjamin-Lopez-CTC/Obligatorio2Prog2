@@ -1,0 +1,68 @@
+@page
+@model Obligatorio2Prog2.Pages.Estadisticas.RankingMedicosModel
+@{
+    ViewData["Title"] = "Listado de Médicos";
+}
+
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="m-0">Lista de Medicos</h2>
+            <div class="d-flex align-items-center">
+            </div>
+            <!-- Select para ordenar -->
+            <form method="post" asp-page-handler="Ordenar">
+                <select name="orden" onchange="this.form.submit()">
+                    <option value="" selected disabled>Seleccione una opcion...</option>
+                    <option value="desc">Descendente</option>
+                    <option value="asc">Ascendente</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de Medicos -->
+    <div class="card-body px-0 pb-0">
+        @if (Model.Medicos.Count() > 0)
+        {
+        <table class="table table-striped border mb-0">
+            <tr class="table-secondary">
+                <th>
+                    Medico
+                </th>
+                <th>
+                    Matricula
+                </th>
+                <th>
+                    Cantidad de turnos
+                </th>
+            </tr>
+            @foreach (var item in Model.Medicos)
+                {
+            <tr>
+                <td>
+                    @Html.DisplayFor(m => item.MedicoId). @Html.DisplayFor(m => item.NombreM) @Html.DisplayFor(m => item.ApellidoM)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.MatriculaM)
+                </td>
+                <td>
+                    @{
+                                int cantTurnos = 0;
+                    }
+                    @foreach (var turno in Model.Turnos.Where(t => t.MedicoId == item.MedicoId))
+                            {
+                                cantTurnos++;
+                            }
+                    @cantTurnos
+                </td>
+            </tr>
+                }
+        </table>
+        }
+        else
+        {
+        <p>No hay medicos registrados</p>
+        }
+    </div>
+</div>
