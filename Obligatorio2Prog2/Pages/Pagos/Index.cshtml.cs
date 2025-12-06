@@ -35,6 +35,11 @@ namespace Obligatorio2Prog2.Pages.Pagos
 
         public async Task<IActionResult> OnPostPagar()
         {   
+            if (Pago.MontoPago > 100000)
+            {
+                ModelState.AddModelError("Pago.MontoPago", "El monto no puede ser mayor a $100.000");
+            }
+
             // Si pago es nulo guarda todos los datos del formulario en turno lo sube a la base de datos, no redirige a ningun lado
             if (Pago == null)
             {
@@ -64,7 +69,7 @@ namespace Obligatorio2Prog2.Pages.Pagos
             await _contexto.SaveChangesAsync();
             turno.PagoId = Pago.PagoId;
             await _contexto.SaveChangesAsync();
-            ViewData["Mensaje"] = "Pago registrado exitosamente!";
+            TempData["ExitoPago"] = "Pago registrado exitosamente!";
             return RedirectToPage();
         }
     }

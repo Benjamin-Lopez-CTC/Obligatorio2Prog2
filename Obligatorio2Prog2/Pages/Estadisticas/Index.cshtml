@@ -4,23 +4,21 @@
     ViewData["Title"] = "Estadísticas";
 }
 
-<div class="row row-cols-1 row-cols-md-2 g-4">
+<div class="row row-cols-1 row-cols-md-4 mt-3 g-4">
     <div class="col">
-        <div class="card">
-            <img src="~/Images/placeholder.png" class="card-img-top" alt="...">
+        <div class="card" style="width:18rem; height:auto;">
+            <img src="~/Images/pacientesEstadisticas.png" class="card-img-top" alt="Icono representante de los pacientes para el listado">
             <div class="card-body">
                 <h5 class="card-title">Listado de Pacientes</h5>
-                <!-- <p class="card-text">Listado de pacientes ordenados alfabéticamente.</p> -->
                 <a class="btn btn-primary" asp-area="" asp-page="/Estadisticas/ListPacientes">LLévame ahí</a>
             </div>
         </div>
     </div>
     <div class="col">
-        <div class="card">
-            <img src="~/Images/placeholder.png" class="card-img-top" alt="...">
+        <div class="card" style="width:18rem; height:auto;">
+            <img src="~/Images/medicosEstadisticas.png" class="card-img-top" alt="Icono representante de los medicos para el listado">
             <div class="card-body">
                 <h5 class="card-title">Listado de Medicos</h5>
-                <!-- <p class="card-text">Listado de médicos por especialidad..</p> -->
                 <a class="btn btn-primary" asp-area="" asp-page="/Estadisticas/ListMedicos">LLévame ahí</a>
             </div>
         </div>

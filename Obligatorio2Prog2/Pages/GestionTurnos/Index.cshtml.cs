@@ -39,6 +39,9 @@ namespace Obligatorio2Prog2.Pages.GestionTurnos
             //Se guardan los cambios en la BDD
             await _contexto.SaveChangesAsync();
 
+            // Se guarda temporalmente un mensaje avisando que se pudo cancelar el turno
+            TempData["ExitoCancelar"] = "Consulta cancelada exitosamente!";
+
             //Se refresca la pagina
             return RedirectToPage();
         }
@@ -54,6 +57,9 @@ namespace Obligatorio2Prog2.Pages.GestionTurnos
 
             //Se guardan los cambios en la BDD
             await _contexto.SaveChangesAsync();
+
+            // Se guarda temporalmente un mensaje avisando que se pudo reprogramar el turno
+            TempData["ExitoReprogramar"] = "Consulta reprogramada exitosamente!";
 
             //Se refresca la pagina
             return RedirectToPage();
@@ -71,6 +77,10 @@ namespace Obligatorio2Prog2.Pages.GestionTurnos
             }
             _contexto.Turnos.Remove(turno);
             await _contexto.SaveChangesAsync();
+
+            // Se guarda temporalmente un mensaje avisando que se pudo eliminar el turno
+            TempData["ExitoEliminar"] = "Consulta eliminada exitosamente!";
+
             // No redirige a ninguna pagina, simplemente la recarga
             return RedirectToPage();
         }

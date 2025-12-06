@@ -92,6 +92,7 @@ namespace Obligatorio2Prog2.Pages.GestionTurnos
             }
             _contexto.Add(Turno);
             await _contexto.SaveChangesAsync();
+            TempData["ExitoAgendar"] = "Consulta agendada exitosamente!";
             return RedirectToPage("Index");
         }
 

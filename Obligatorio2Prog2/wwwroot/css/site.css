@@ -21,18 +21,17 @@ body {
   margin-bottom: 60px;
 }
 
-.btn-square {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: .25rem;
-    height: 1.9rem; 
-    width: 1.9rem; 
-    border-radius: .375rem; 
+#toast-container > .toast-success {
+    background-color: #0D6EFD !important;
 }
 
-.btn-square img {
-    max-width: 70%;
-    height: auto;
-    display: block;
+#toast-container > .toast-info {
+    background-color: #0D6EFD !important;
+}
+
+#toast-container > div {
+    color: #ffffff !important;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,.1);
+    opacity: 0.95;
 }

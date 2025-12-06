@@ -95,15 +95,15 @@
                                 
                                 <form method="post" class="m-0">
                                     <button type="submit"
-                                            class="btn btn-secondary btn-square"
+                                            class="btn btn-secondary btn-sm"
                                             asp-page-handler="Eliminar"
                                             asp-route-TurnoId="@item.TurnoId"
                                             onclick="return confirm('¿Seguro que quiere eliminar este turno?');">
-                                        <img src="~/Images/EliminarIco.png" alt="Eliminar" />
+                                        <i class="bi bi-trash3"></i>
                                     </button>
                                 </form>
 
-                                <!-- Modal movido dentro del TD (HTML válido) -->
+                                <!-- Modal que permite reprogramar la hora del turno seleccionado -->
                                 <div class="modal fade" id="modalReprogramar_@item.TurnoId" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                         <div class="modal-content">
@@ -117,11 +117,14 @@
 
                                                     <input type="hidden" name="TurnoId" value="@item.TurnoId" />
 
-                                                        <div class="d-flex align-items-center mb-1 gap-2">
-                                                            <p class="m-0">Nueva hora:</p>
+                                                        <div class="d-flex align-items-center mb-3 gap-2">
+                                                            <p class="m-0 text-nowrap">Nueva hora:</p>
 
                                                             <select name="HoraId" class="form-select form-select-sm">
-                                                                @foreach (var hora in item.Medico.Horas.Where(h => !Model.Turnos.Any(t => t.HoraId == h.HoraId && t.MedicoId == item.MedicoId && t.Estado == 1 && t.FechaTurno == item.FechaTurno)))
+                                                                @foreach (var hora in item.Medico.Horas.Where(h => !Model.Turnos.Any(t => t.HoraId == h.HoraId && 
+                                                                                                                                          t.MedicoId == item.MedicoId && 
+                                                                                                                                          t.Estado == 1 && 
+                                                                                                                                          t.FechaTurno == item.FechaTurno)))
                                                             {
                                                                 <option value="@hora.HoraId">@hora.HoraTurno</option>
                                                             }
@@ -151,11 +154,11 @@
                                 <button class="btn btn-outline-secondary btn-sm" disabled>Cancelar</button>
                                 <form method="post" class="m-0">
                                     <button type="submit"
-                                            class="btn btn-secondary btn-square"
+                                            class="btn btn-secondary btn-sm"
                                             asp-page-handler="Eliminar"
                                             asp-route-TurnoId="@item.TurnoId"
                                             onclick="return confirm('¿Seguro que quiere eliminar este turno?');">
-                                        <img src="~/Images/EliminarIco.png" alt="Eliminar" />
+                                        <i class="bi bi-trash3"></i>
                                     </button>
                                 </form>
                             </div>
@@ -172,3 +175,25 @@
         }
     </div>
 </div>
+
+<!-- Script que muestra los distintos toasts al realizar acciones con los turnos (agendar, cancelar y reprogramar) -->
+@section Scripts {
+    <script>
+        $(function () {
+            var ExitoAgendar = '@TempData["ExitoAgendar"]';
+            var ExitoCancelar = '@TempData["ExitoCancelar"]';
+            var ExitoReprogramar = '@TempData["ExitoReprogramar"]';
+            var ExitoEliminar = '@TempData["ExitoEliminar"]';
+
+            if (ExitoAgendar) {
+                toastr.success(ExitoAgendar);
+            } else if (ExitoCancelar) {
+                toastr.success(ExitoCancelar);
+            } else if (ExitoReprogramar) {
+                toastr.success(ExitoReprogramar);
+            } else if (ExitoEliminar) {
+                toastr.success(ExitoEliminar);
+            }
+        });
+    </script>
+}

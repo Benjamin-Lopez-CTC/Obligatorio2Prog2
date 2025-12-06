@@ -74,10 +74,16 @@
                         @if (item.PagoId == 0)
                         {
                             <td>
+
                                 <button class="btn btn-success btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalPagar_@item.TurnoId">
                                     Pagar
+                                </button>
+
+                                <button class="btn btn-outline-secondary btn-sm"
+                                        disabled>
+                                    <i class="bi bi-info-lg"></i>
                                 </button>
 
                                 <div class="modal fade" id="modalPagar_@item.TurnoId" tabindex="-1" aria-hidden="true">
@@ -96,13 +102,13 @@
                                                     <div class="mb-4 gap-2">
                                                         <div class="form-group">
                                                             <label class="col-sm-3 col-form-label" asp-for="Pago.MontoPago"></label>
-                                                            <input type="number" id="MontoPago" asp-for="Pago.MontoPago" min="1" max="100000" class="form-control mb-2" />
+                                                            <input required type="number" id="MontoPago" asp-for="Pago.MontoPago" min="1" max="100000" class="form-control mb-2" />
                                                             <span asp-validation-for="Pago.MontoPago" class="text-danger"></span>
                                                         </div>
 
                                                         <div class="form-group">
                                                             <label class="col-sm-5 col-form-label" asp-for="Pago.MetodoPago"></label>
-                                                            <select id="MetodoPago" asp-for="Pago.MetodoPago" class="form-control mb-2">
+                                                            <select required id="MetodoPago" asp-for="Pago.MetodoPago" class="form-control mb-2">
                                                                 <option disabled selected value="">Seleccione un metodo de pago</option>
                                                                 <option value="Efectivo">Efectivo</option>
                                                                 <option value="Debito">Débito</option>
@@ -135,6 +141,29 @@
                         {
                             <td>
                                 <button class="btn btn-outline-secondary btn-sm" disabled>Pagar</button>
+
+                                <button class="btn btn-secondary btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalInfo_@item.TurnoId">
+                                    <i class="bi bi-info-lg"></i>
+                                </button>
+
+                                <div class="modal fade" id="modalInfo_@item.TurnoId" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Detalles del pago</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                    <p>Persona a nombre del pago: @Html.DisplayFor(m => item.Paciente.NombreP) @Html.DisplayFor(m => item.Paciente.ApellidoP)</p>
+                                                    <p>Fecha del pago: @Html.DisplayFor(m => item.Pago.FechaPago)</p>
+                                                    <p>Monto del pago: @Html.DisplayFor(m => item.Pago.MontoPago)</p>
+                                                    <p>Método de pago: @Html.DisplayFor(m => item.Pago.MetodoPago)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         }
                     </tr>
@@ -145,12 +174,18 @@
     </div>
 </div>
 
-<!-- script que ejecuta un alert cuando se envia el formulario de pago -->
-<script type="text/javascript">
-    window.onload = function () {
-        var mensaje = "@ViewData["Mensaje"]";
-        if (mensaje && mensaje.length > 0) {
-            alert(mensaje);
-        }
-    };
-</script>
+@section Scripts {
+    <!-- Script que activa la validacion personalizada -->
+    <partial name="_ValidationScriptsPartial" />
+
+    <!-- Script que muestra un toast al registrar un pago -->
+    <script>
+        $(function () {
+            var ExitoPago = '@TempData["ExitoPago"]';
+
+            if (ExitoPago) {
+            toastr.success(ExitoPago);
+            }
+        });
+    </script>
+}
