@@ -1,11 +1,20 @@
 use Obli2Prog2;
 
+/* Ejecutar las siguientes lineas de una, tiene integrado un sistema donde no se ejecuta nada si hay un error al insertar los datos,
+   no olvidar antes de ejecutar este script hacer un update-database para generar la base de datos en el dispositivo */
+
 SET NOCOUNT ON;
 SET DATEFORMAT ymd;
 SET XACT_ABORT ON;
 
 BEGIN TRANSACTION;
 BEGIN TRY
+
+-- 0) Insert a dummy Pago with PagoId = 0 so FK to 0 is valid
+SET IDENTITY_INSERT Pagos ON;
+INSERT INTO Pagos (PagoId, FechaPago, MontoPago, MetodoPago)
+VALUES (0, '1900-01-01', 0, 'Sin pago');
+SET IDENTITY_INSERT Pagos OFF;
 
 -- 1) Insert 10 Medicos and capture their Ids
 DECLARE @InsertedMedicos TABLE (Idx INT IDENTITY(1,1), MedicoId INT);
@@ -95,7 +104,7 @@ VALUES
 ('Lorena','Vega','20123456','lorena.v','Recep1A'),
 ('Mario','Zapata','21123456','mario.z','Recep2A');
 
--- 6) Insert 2 Pagos and capture Ids
+-- 6) Insert 2 Pagos and capture Ids (regular pagos, dummy already inserted)
 DECLARE @InsertedPagos TABLE (Idx INT IDENTITY(1,1), PagoId INT);
 
 INSERT INTO Pagos (FechaPago, MontoPago, MetodoPago)
@@ -107,18 +116,18 @@ VALUES
 -- 7) Insert 10 Turnos coherent with states (1 = scheduled future, 2 = done past, 3 = cancelled)
 DECLARE @pId INT, @mId INT, @hId INT, @payId INT;
 
--- Turno 1
+-- Turno 1 (no pago -> use PagoId = 0)
 SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 1;
 SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 1;
 SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '09:00');
-INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
-VALUES (@pId, @mId, '2025-12-05', 1, @hId);
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId, PagoId)
+VALUES (@pId, @mId, '2025-12-05', 1, @hId, 0);
 
--- Turno 2
+-- Turno 2 (no pago)
 SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 2;
 SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 2;
 SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '10:30');
-INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId) VALUES (@pId, @mId, '2025-12-06', 1, @hId);
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId, PagoId) VALUES (@pId, @mId, '2025-12-06', 1, @hId, 0);
 
 -- Turno 3 (done) with pago 1
 SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 3;
@@ -136,47 +145,47 @@ SELECT @payId = PagoId FROM @InsertedPagos WHERE Idx = 2;
 INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId, PagoId)
 VALUES (@pId, @mId, '2025-11-12', 2, @hId, @payId);
 
--- Turno 5 (cancelled)
+-- Turno 5 (cancelled, no pago)
 SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 5;
 SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 5;
 SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '14:30');
-INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
-VALUES (@pId, @mId, '2025-11-20', 3, @hId);
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId, PagoId)
+VALUES (@pId, @mId, '2025-11-20', 3, @hId, 0);
 
--- Turno 6
+-- Turno 6 (no pago)
 SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 6;
 SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 6;
 SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '09:30');
-INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
-VALUES (@pId, @mId, '2025-12-07', 1, @hId);
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId, PagoId)
+VALUES (@pId, @mId, '2025-12-07', 1, @hId, 0);
 
--- Turno 7 (done)
+-- Turno 7 (done, no pago)
 SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 7;
 SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 7;
 SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '16:00');
-INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
-VALUES (@pId, @mId, '2025-11-08', 2, @hId);
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId, PagoId)
+VALUES (@pId, @mId, '2025-11-08', 2, @hId, 0);
 
--- Turno 8 (cancelled)
+-- Turno 8 (cancelled, no pago)
 SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 8;
 SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 8;
 SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '12:30');
-INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
-VALUES (@pId, @mId, '2025-11-20', 3, @hId);
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId, PagoId)
+VALUES (@pId, @mId, '2025-11-20', 3, @hId, 0);
 
--- Turno 9
+-- Turno 9 (no pago)
 SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 9;
 SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 9;
 SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '11:30');
-INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
-VALUES (@pId, @mId, '2025-12-10', 1, @hId);
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId, PagoId)
+VALUES (@pId, @mId, '2025-12-10', 1, @hId, 0);
 
--- Turno 10
+-- Turno 10 (no pago)
 SELECT @pId = PacienteId FROM @InsertedPacientes WHERE Idx = 10;
 SELECT @mId = MedicoId  FROM @InsertedMedicos   WHERE Idx = 10;
 SELECT @hId = (SELECT TOP 1 HoraId FROM Horas WHERE MedicoId = @mId AND HoraTurno = '13:00');
-INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId)
-VALUES (@pId, @mId, '2025-12-11', 1, @hId);
+INSERT INTO Turnos (PacienteId, MedicoId, FechaTurno, Estado, HoraId, PagoId)
+VALUES (@pId, @mId, '2025-12-11', 1, @hId, 0);
 
 -- 8) Simple counts for verification
 SELECT 'Medicos' AS Entity, COUNT(*) AS Total FROM Medicos;
